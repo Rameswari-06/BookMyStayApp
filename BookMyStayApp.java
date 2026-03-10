@@ -1,4 +1,5 @@
 import java.util.HashMap;
+
 abstract class Room {
 
     String type;
@@ -59,13 +60,50 @@ class RoomInventory {
             System.out.println(room + " Available: " + inventory.get(room));
         }
     }
+
+    class SearchService {
+
+        void searchAvailableRooms(RoomInventory inventory) {
+
+            SingleRoom single = new SingleRoom();
+            DoubleRoom doubleRoom = new DoubleRoom();
+            SuiteRoom suite = new SuiteRoom();
+
+            int singleAvailable = inventory.getAvailability("Single Room");
+            int doubleAvailable = inventory.getAvailability("Double Room");
+            int suiteAvailable = inventory.getAvailability("Suite Room");
+
+            System.out.println("Available Rooms");
+
+            if (singleAvailable > 0) {
+                single.displayDetails();
+                System.out.println("Available: " + singleAvailable);
+                System.out.println();
+            }
+
+            if (doubleAvailable > 0) {
+                doubleRoom.displayDetails();
+                System.out.println("Available: " + doubleAvailable);
+                System.out.println();
+            }
+
+            if (suiteAvailable > 0) {
+                suite.displayDetails();
+                System.out.println("Available: " + suiteAvailable);
+                System.out.println();
+            }
+        }
+    }
 }
+
+
 public class BookMyStayApp {
 
     public static void main(String[] args) {
         useCase1();
         useCase2();
         useCase3();
+        useCase4();
     }
 
     public static void useCase1() {
@@ -111,5 +149,16 @@ public class BookMyStayApp {
 
         RoomInventory inventory = new RoomInventory();
         inventory.displayInventory();
+    }
+
+    public static void useCase4() {
+
+        System.out.println("Book My Stay - Hotel Booking System v4.0");
+        System.out.println();
+
+        RoomInventory inventory = new RoomInventory();
+
+        RoomInventory.SearchService search = inventory.new SearchService();
+        search.searchAvailableRooms(inventory);
     }
 }
