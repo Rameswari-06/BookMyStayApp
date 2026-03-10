@@ -1,3 +1,4 @@
+import java.util.HashMap;
 abstract class Room {
 
     String type;
@@ -34,11 +35,37 @@ class SuiteRoom extends Room {
         super("Suite Room", 3, 6000);
     }
 }
+class RoomInventory {
+
+    private HashMap<String, Integer> inventory;
+
+    RoomInventory() {
+        inventory = new HashMap<>();
+        inventory.put("Single Room", 5);
+        inventory.put("Double Room", 3);
+        inventory.put("Suite Room", 2);
+    }
+
+    int getAvailability(String roomType) {
+        return inventory.getOrDefault(roomType, 0);
+    }
+
+    void updateAvailability(String roomType, int count) {
+        inventory.put(roomType, count);
+    }
+
+    void displayInventory() {
+        for (String room : inventory.keySet()) {
+            System.out.println(room + " Available: " + inventory.get(room));
+        }
+    }
+}
 public class BookMyStayApp {
 
     public static void main(String[] args) {
         useCase1();
         useCase2();
+        useCase3();
     }
 
     public static void useCase1() {
@@ -75,5 +102,14 @@ public class BookMyStayApp {
 
         suite.displayDetails();
         System.out.println("Available: " + suiteAvailable);
+    }
+
+    public static void useCase3() {
+
+        System.out.println("Book My Stay - Hotel Booking System v3.0");
+        System.out.println();
+
+        RoomInventory inventory = new RoomInventory();
+        inventory.displayInventory();
     }
 }
