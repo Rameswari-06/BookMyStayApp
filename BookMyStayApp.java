@@ -1,6 +1,10 @@
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.HashSet;
+
+
 
 class Reservation {
 
@@ -27,6 +31,13 @@ class BookingRequestQueue {
     void addRequest(Reservation r) {
         queue.add(r);
         System.out.println("Booking request added for " + r.guestName);
+    }
+    boolean hasRequests() {
+        return !queue.isEmpty();
+    }
+
+    Reservation getNextRequest() {
+        return queue.poll();
     }
 
     void showRequests() {
@@ -88,6 +99,10 @@ class RoomInventory {
     int getAvailability(String roomType) {
         return inventory.getOrDefault(roomType, 0);
     }
+    void decreaseAvailability(String roomType) {
+        int current = getAvailability(roomType);
+        inventory.put(roomType, current - 1);
+    }
 
     void updateAvailability(String roomType, int count) {
         inventory.put(roomType, count);
@@ -134,7 +149,52 @@ class RoomInventory {
 
     }
 }
+class BookingService {
 
+    HashMap<String, Set<String>> allocatedRooms = new HashMap<>();
+    Set<String> usedRoomIds = new HashSet<>();
+
+    String generateRoomId(String roomType, int number) {
+        return roomType.replace(" ", "") + "-" + number;
+    }
+
+    void processBookings(BookingRequestQueue queue, RoomInventory inventory) {
+
+        int counter = 1;
+
+        while (queue.hasRequests()) {
+
+            Reservation r = queue.getNextRequest();
+            String roomType = r.roomType;
+
+            int available = inventory.getAvailability(roomType);
+
+            if (available > 0) {
+
+                String roomId = generateRoomId(roomType, counter++);
+
+                if (!usedRoomIds.contains(roomId)) {
+
+                    usedRoomIds.add(roomId);
+
+                    allocatedRooms.putIfAbsent(roomType, new HashSet<>());
+                    allocatedRooms.get(roomType).add(roomId);
+
+                    inventory.decreaseAvailability(roomType);
+
+                    System.out.println("Reservation Confirmed!");
+                    System.out.println("Guest: " + r.guestName);
+                    System.out.println("Room Type: " + roomType);
+                    System.out.println("Assigned Room ID: " + roomId);
+                    System.out.println();
+                }
+
+            } else {
+                System.out.println("No rooms available for " + roomType + " for guest " + r.guestName);
+            }
+        }
+    }
+}
 
 public class BookMyStayApp {
 
@@ -144,6 +204,8 @@ public class BookMyStayApp {
         useCase3();
         useCase4();
         useCase5();
+        useCase6();
+
     }
 
     public static void useCase1() {
@@ -217,5 +279,23 @@ public class BookMyStayApp {
         bookingQueue.addRequest(r3);
 
         bookingQueue.showRequests();
+    }
+    public static void useCase6() {
+
+        System.out.println("\nBook My Stay - Hotel Booking System v6.0\n");
+
+        RoomInventory inventory = new RoomInventory();
+        BookingRequestQueue bookingQueue = new BookingRequestQueue();
+
+        bookingQueue.addRequest(new Reservation("Alice", "Single Room"));
+        bookingQueue.addRequest(new Reservation("Bob", "Double Room"));
+        bookingQueue.addRequest(new Reservation("Charlie", "Suite Room"));
+
+        BookingService bookingService = new BookingService();
+
+        bookingService.processBookings(bookingQueue, inventory);
+
+        System.out.println("Updated Inventory:\n");
+        inventory.displayInventory();
     }
 }
