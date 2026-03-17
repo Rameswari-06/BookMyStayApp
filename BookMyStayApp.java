@@ -151,65 +151,7 @@ class RoomInventory {
 
     }
 }
-class AddOnService {
 
-    String serviceName;
-    double price;
-
-    AddOnService(String serviceName, double price) {
-        this.serviceName = serviceName;
-        this.price = price;
-    }
-
-    void display() {
-        System.out.println(serviceName + " - ₹" + price);
-    }
-}
-class AddOnServiceManager {
-
-    // ReservationID -> List of Services
-    HashMap<String, List<AddOnService>> serviceMap = new HashMap<>();
-
-    void addService(String reservationId, AddOnService service) {
-
-        serviceMap.putIfAbsent(reservationId, new ArrayList<>());
-        serviceMap.get(reservationId).add(service);
-
-        System.out.println("Service added: " + service.serviceName +
-                " for Reservation ID: " + reservationId);
-    }
-
-    void showServices(String reservationId) {
-
-        System.out.println("\nServices for Reservation ID: " + reservationId);
-
-        List<AddOnService> services = serviceMap.get(reservationId);
-
-        if (services == null || services.isEmpty()) {
-            System.out.println("No services added.");
-            return;
-        }
-
-        for (AddOnService s : services) {
-            s.display();
-        }
-    }
-
-    double calculateTotalCost(String reservationId) {
-
-        List<AddOnService> services = serviceMap.get(reservationId);
-
-        if (services == null) return 0;
-
-        double total = 0;
-
-        for (AddOnService s : services) {
-            total += s.price;
-        }
-
-        return total;
-    }
-}
 class BookingService {
 
     HashMap<String, Set<String>> allocatedRooms = new HashMap<>();
@@ -266,7 +208,7 @@ public class BookMyStayApp {
         useCase4();
         useCase5();
         useCase6();
-        useCase7();
+
 
     }
 
@@ -358,45 +300,6 @@ public class BookMyStayApp {
         bookingService.processBookings(bookingQueue, inventory);
 
         System.out.println("Updated Inventory:\n");
-        inventory.displayInventory();
-    }
-    public static void useCase7() {
-
-        System.out.println("\nBook My Stay - Hotel Booking System v7.0\n");
-
-        // Step 1: Setup booking (same as UC6)
-        RoomInventory inventory = new RoomInventory();
-        BookingRequestQueue bookingQueue = new BookingRequestQueue();
-
-        bookingQueue.addRequest(new Reservation("Alice", "Single Room"));
-
-        BookingService bookingService = new BookingService();
-        bookingService.processBookings(bookingQueue, inventory);
-
-        // Assume generated ID (based on your logic)
-        String reservationId = "SingleRoom-1";
-
-        // Step 2: Add-on services
-        AddOnServiceManager manager = new AddOnServiceManager();
-
-        AddOnService wifi = new AddOnService("WiFi", 500);
-        AddOnService breakfast = new AddOnService("Breakfast", 800);
-        AddOnService spa = new AddOnService("Spa", 1500);
-
-        manager.addService(reservationId, wifi);
-        manager.addService(reservationId, breakfast);
-        manager.addService(reservationId, spa);
-
-        // Step 3: Show services
-        manager.showServices(reservationId);
-
-        // Step 4: Calculate cost
-        double total = manager.calculateTotalCost(reservationId);
-
-        System.out.println("\nTotal Add-On Cost: ₹" + total);
-
-        // Verify inventory unchanged
-        System.out.println("\nInventory remains unchanged:");
         inventory.displayInventory();
     }
 }
